@@ -39,13 +39,11 @@ import jp.mijs.winter2019.security.webauthn.entity.Credential;
 import jp.mijs.winter2019.security.webauthn.entity.User;
 import jp.mijs.winter2019.security.webauthn.repository.CredentialRepository;
 import jp.mijs.winter2019.security.webauthn.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * WebAuthnによるユーザの登録を行うサービス
  */
 @Service
-@Slf4j
 public class WebAuthnRegistrationService {
   private static final String DOMAIN_NAME = "localhost";
   
@@ -63,6 +61,12 @@ public class WebAuthnRegistrationService {
       this.credentialRepository = credentialRepository;
   }
 
+  /**
+   * 登録要求に対するレスポンスを生成する。
+   * レスポンスの内容はWebAuthnの仕様に従う。
+   * @param user ユーザ情報
+   * @return 登録要求に対するレスポンス
+   */
   public PublicKeyCredentialCreationOptions creationOptions(User user) {
 
     //rp - RP(認証局)情報 - 中間者攻撃への耐性
@@ -78,7 +82,7 @@ public class WebAuthnRegistrationService {
             userId,
             userName,
             userDisplayName);
-
+    
     //challenge - リプレイ攻撃への耐性
     var challenge = new DefaultChallenge();
 
@@ -175,6 +179,14 @@ public class WebAuthnRegistrationService {
     return user;
   }
 
+  /**
+   * 認証情報をサーバ上に登録する。
+   * クライアントから送信された情報の検証を行い、問題がなければサーバ上に公開鍵を登録する。
+   * @param user ユーザ情報
+   * @param challenge サーバで保持するチャレンジ情報
+   * @param clientDataJSON クライアントから送信されたクレデンシャル生成のデータ
+   * @param attestationObject クライアントから送信された公開鍵情報
+   */
   public void creationFinish(User user, Challenge challenge, byte[] clientDataJSON, byte[] attestationObject) {
     //検証用サーバ情報を生成
     var serverProperty = new ServerProperty(

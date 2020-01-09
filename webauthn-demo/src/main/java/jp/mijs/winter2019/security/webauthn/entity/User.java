@@ -1,11 +1,13 @@
 package jp.mijs.winter2019.security.webauthn.entity;
 
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * ユーザ情報
  */
 @Data
+@ToString
 public class User {
   /** ユーザID */
   private byte[] id;

@@ -41,10 +41,12 @@ public class WebAuthnAuthenticationService {
       this.credentialRepository = credentialRepository;
   }
 
-  public Optional<User> find(String email) {
-    return userRepository.findByEmail(email);
-  }
-  
+  /**
+   * 認証要求に対するレスポンスの生成を行う。
+   * レスポンスの内容はWebAuthnの仕様に従う。
+   * @param user ユーザ情報
+   * @return 認証要求に対するレスポンス
+   */
   public PublicKeyCredentialRequestOptions requestOptions(User user) {
     //challenge - リプレイ攻撃への耐性
     var challenge = new DefaultChallenge();
@@ -84,6 +86,26 @@ public class WebAuthnAuthenticationService {
     );
   }
 
+  /**
+   * メールアドレスからユーザ情報を検索する。
+   * ユーザ情報が存在しない場合はOptional.emptyを返す。
+   * @param email メールアドレス
+   * @param displayName 表示名称
+   * @return ユーザ情報
+   */
+  public Optional<User> find(String email) {
+    return userRepository.findByEmail(email);
+  }
+  
+  /**
+   * 認証処理を行う。
+   * クライアントから送信された情報について、サーバで保持する公開鍵情報を用いて検証を行い、問題がなければ認証完了とする。
+   * @param challenge サーバで保持するチャレンジ情報
+   * @param credentialId クライアントから送信されたクレデンシャルID
+   * @param clientDataJSON クライアントから送信されたクレデンシャル生成のデータ
+   * @param authenticatorData クライアントから送信された公開鍵情報
+   * @param signature クライアントが保持する秘密鍵によって署名された署名情報
+   */
   public void assertionFinish(Challenge challenge, 
                               byte[] credentialId,
                               byte[] clientDataJSON,
