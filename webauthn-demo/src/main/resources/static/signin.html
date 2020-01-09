@@ -1,0 +1,19 @@
+<!-- デザイン出典: https://codepen.io/colorlib/pen/rxddKy -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>WebAuthn認証</title>
+    <link rel="stylesheet" href="css/bundle.css"/>
+</head>
+<body translate="no">
+<div class="login-page">
+    <div class="form">
+        <input type="text" placeholder="Eメール" value="test@mijs.jp" id="email"/>
+        <button onclick="authenticationAsync()">ログイン</button>
+        <p class="message">アカウントが未登録ですか？<a href="signup.html">アカウント作成</a></p>
+    </div>
+</div>
+<script src="js/webauthn.js"></script>
+</body>
+</html>
